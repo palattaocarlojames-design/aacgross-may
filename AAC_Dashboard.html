@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAC Gross Sales Dashboard — May 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --navy: #0a1628;
+  --navy2: #111f38;
+  --navy3: #1a2f50;
+  --teal: #00c896;
+  --teal2: #00a87d;
+  --teal3: rgba(0,200,150,0.12);
+  --amber: #f5a623;
+  --red: #ff4d6d;
+  --red2: rgba(255,77,109,0.15);
+  --blue: #4a9eff;
+  --blue2: rgba(74,158,255,0.12);
+  --text: #e8eef8;
+  --text2: #8899b8;
+  --text3: #4a5a78;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --card: rgba(255,255,255,0.04);
+  --card2: rgba(255,255,255,0.07);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Background grid ── */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,200,150,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,150,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none;z-index:0;
+}
+
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* ── Header ── */
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  position: sticky; top: 0;
+  background: rgba(10,22,40,0.92);
+  backdrop-filter: blur(16px);
+  z-index: 100;
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px; gap: 16px;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  color: var(--navy); letter-spacing: -0.5px;
+}
+.logo-text {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 16px; letter-spacing: 0.3px;
+}
+.logo-text span { color: var(--teal); }
+.header-meta {
+  display: flex; align-items: center; gap: 16px;
+}
+.live-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--teal3); border: 1px solid rgba(0,200,150,0.25);
+  border-radius: 20px; padding: 4px 12px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--teal);
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--teal); animation: blink 1.4s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.period-badge {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text2); border: 1px solid var(--border2);
+  border-radius: 6px; padding: 4px 10px;
+}
+.export-btn {
+  background: var(--teal); color: var(--navy);
+  border: none; border-radius: 8px;
+  padding: 8px 16px; font-size: 13px; font-weight: 600;
+  font-family: var(--font-body); cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: background 0.15s;
+}
+.export-btn:hover { background: var(--teal2); }
+
+/* ── Hero ── */
+.hero {
+  padding: 48px 0 36px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+}
+.hero-title {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(28px, 4vw, 44px); line-height: 1.1;
+  letter-spacing: -1px;
+}
+.hero-title em { color: var(--teal); font-style: normal; }
+.hero-sub {
+  font-size: 13px; color: var(--text2); margin-top: 8px;
+  font-family: var(--font-mono);
+}
+.hero-total {
+  text-align: right;
+}
+.hero-total-label {
+  font-size: 11px; color: var(--text2); font-family: var(--font-mono);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;
+}
+.hero-total-val {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(32px, 5vw, 52px); color: var(--teal);
+  letter-spacing: -2px; line-height: 1;
+}
+.hero-total-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+/* ── KPI row ── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 28px;
+}
+.kpi-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px 20px;
+  position: relative; overflow: hidden;
+  animation: fadeUp 0.4s ease both;
+}
+.kpi-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.kpi-card.teal::before { background: var(--teal); }
+.kpi-card.blue::before { background: var(--blue); }
+.kpi-card.amber::before { background: var(--amber); }
+.kpi-card.red::before { background: var(--red); }
+.kpi-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text2); font-family: var(--font-mono); margin-bottom: 8px;
+}
+.kpi-value {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 22px; line-height: 1; color: var(--text);
+}
+.kpi-value.teal { color: var(--teal); }
+.kpi-value.amber { color: var(--amber); }
+.kpi-value.red { color: var(--red); }
+.kpi-delta {
+  font-size: 11px; color: var(--text3); margin-top: 6px;
+  font-family: var(--font-mono);
+}
+.kpi-delta.up { color: var(--teal); }
+.kpi-delta.warn { color: var(--amber); }
+.kpi-delta.danger { color: var(--red); }
+
+/* ── Section titles ── */
+.section-title {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 13px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--text2);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+}
+.section-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── Grid layouts ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 768px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+/* ── Cards ── */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px 22px;
+}
+.card-title {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text2); text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.chart-wrap { position: relative; width: 100%; }
+
+/* ── Branch table ── */
+.branch-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.branch-row:last-child { border-bottom: none; }
+.branch-rank {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text3); width: 18px; flex-shrink: 0; text-align: center;
+}
+.branch-rank.gold { color: var(--amber); font-weight: 500; }
+.branch-name {
+  font-size: 13px; font-weight: 500; flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.branch-bar-wrap {
+  flex: 0 0 80px; height: 4px;
+  background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden;
+}
+.branch-bar { height: 100%; border-radius: 2px; }
+.branch-val {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--text); width: 70px; text-align: right; flex-shrink: 0;
+}
+.branch-pct {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text3); width: 36px; text-align: right; flex-shrink: 0;
+}
+
+/* ── Kabig table ── */
+.kabig-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.kabig-row:last-child { border-bottom: none; }
+.kabig-name { font-size: 12px; font-weight: 500; flex: 1; }
+.kabig-rate {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  width: 52px; text-align: right; flex-shrink: 0;
+}
+.kabig-rate.ok { color: var(--teal); }
+.kabig-rate.warn { color: var(--amber); }
+.kabig-rate.danger { color: var(--red); }
+.kabig-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: 20px;
+  font-family: var(--font-mono); flex-shrink: 0;
+}
+.kabig-badge.ok { background: var(--teal3); color: var(--teal); }
+.kabig-badge.warn { background: rgba(245,166,35,0.12); color: var(--amber); }
+.kabig-badge.danger { background: var(--red2); color: var(--red); }
+.kabig-bar-wrap {
+  flex: 0 0 60px; height: 4px;
+  background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden;
+}
+.kabig-bar { height: 100%; border-radius: 2px; }
+
+/* ── Alert rows ── */
+.alert-row {
+  display: flex; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid var(--border); align-items: flex-start;
+}
+.alert-row:last-child { border-bottom: none; }
+.alert-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 14px;
+}
+.alert-icon.danger { background: var(--red2); color: var(--red); }
+.alert-icon.warn { background: rgba(245,166,35,0.12); color: var(--amber); }
+.alert-icon.ok { background: var(--teal3); color: var(--teal); }
+.alert-icon.info { background: var(--blue2); color: var(--blue); }
+.alert-text { font-size: 12px; line-height: 1.5; color: var(--text2); }
+.alert-text strong { color: var(--text); font-weight: 500; }
+
+/* ── Insight row ── */
+.insight-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px; margin-bottom: 28px;
+}
+.insight-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px;
+  border-left: 3px solid var(--teal);
+}
+.insight-card.warn { border-left-color: var(--amber); }
+.insight-card.danger { border-left-color: var(--red); }
+.insight-card.info { border-left-color: var(--blue); }
+.insight-head {
+  font-size: 11px; font-family: var(--font-mono);
+  color: var(--text3); text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: 6px;
+}
+.insight-body { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.insight-body strong { color: var(--text); }
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 0; margin-top: 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-left {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text3);
+}
+.footer-right {
+  display: flex; gap: 8px;
+}
+.footer-btn {
+  background: transparent; border: 1px solid var(--border2);
+  border-radius: 8px; padding: 7px 14px; font-size: 12px;
+  color: var(--text2); cursor: pointer; font-family: var(--font-body);
+  transition: border-color 0.15s, color 0.15s;
+}
+.footer-btn:hover { border-color: var(--teal); color: var(--teal); }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card { animation: fadeUp 0.4s ease both; }
+
+/* ── Print ── */
+@media print {
+  body { background: white; color: #111; }
+  header { position: static; background: white; border-bottom: 1px solid #ddd; }
+  .export-btn, .footer-right { display: none; }
+  body::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="wrap">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-mark">AA</div>
+        <div class="logo-text">AAC <span>OPS</span></div>
+      </div>
+      <div class="header-meta">
+        <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+        <div class="period-badge">MAY 2026</div>
+        <button class="export-btn" onclick="window.print()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <div>
+      <div class="hero-title">Gross Sales<br><em>Operations</em> Dashboard</div>
+      <div class="hero-sub">AAC GROSS UPDATE · 8 BRANCHES · MAY 2026</div>
+    </div>
+    <div class="hero-total">
+      <div class="hero-total-label">Total Gross</div>
+      <div class="hero-total-val" id="counter-total">₱0</div>
+      <div class="hero-total-sub">across all 8 branches</div>
+    </div>
+  </div>
+
+  <!-- ── KPI CARDS ── -->
+  <div class="kpi-row">
+    <div class="kpi-card teal" style="animation-delay:0.05s">
+      <div class="kpi-label">Total Gross Sales</div>
+      <div class="kpi-value teal">₱203.9M</div>
+      <div class="kpi-delta up">↑ 8 branches reporting</div>
+    </div>
+    <div class="kpi-card blue" style="animation-delay:0.1s">
+      <div class="kpi-label">Total Hits</div>
+      <div class="kpi-value">₱120.8M</div>
+      <div class="kpi-delta">59.2% of gross</div>
+    </div>
+    <div class="kpi-card amber" style="animation-delay:0.15s">
+      <div class="kpi-label">Total Kabig</div>
+      <div class="kpi-value amber">₱83.2M</div>
+      <div class="kpi-delta warn">40.8% of gross</div>
+    </div>
+    <div class="kpi-card teal" style="animation-delay:0.2s">
+      <div class="kpi-label">Top Branch</div>
+      <div class="kpi-value" style="font-size:17px">Maguindanao</div>
+      <div class="kpi-delta up">₱58.6M · 28.7% share</div>
+    </div>
+    <div class="kpi-card red" style="animation-delay:0.25s">
+      <div class="kpi-label">Highest Kabig Rate</div>
+      <div class="kpi-value" style="font-size:17px">LDN Balo-I</div>
+      <div class="kpi-delta danger">50.9% · needs review</div>
+    </div>
+    <div class="kpi-card amber" style="animation-delay:0.3s">
+      <div class="kpi-label">Branches Above 45%</div>
+      <div class="kpi-value amber">5 / 8</div>
+      <div class="kpi-delta warn">flagged for monitoring</div>
+    </div>
+  </div>
+
+  <!-- ── BRANCH RANKINGS + GROSS CHART ── -->
+  <div class="section-title">Branch performance</div>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title">Gross sales by branch — ranked</div>
+      <div class="branch-row">
+        <div class="branch-rank gold">1</div>
+        <div class="branch-name">Maguindanao</div>
+        <div class="branch-bar-wrap"><div class="branch-bar" style="width:100%;background:#00c896"></div></div>
+        <div class="branch-val">₱58.6M</div>
+        <div class="branch-pct">28.7%</div>
+      </div>
+      <div class="branch-row">
+        <div class="branch-rank">2</div>
+        <div class="branch-name">Cotabato</div>
+        <div class="branch-bar-wrap"><div class="branch-bar" style="width:69%;background:#4a9eff"></div></div>
+        <div class="branch-val">₱40.3M</div>
+        <div class="branch-pct">19.8%</div>
+      </div>
+      <div class="branch-row">
+        <div class="branch-rank">3</div>
+        <div class="branch-name">LDN Iligan</div>
+        <div class="branch-bar-wrap"><div class="branch-bar" style="width:52%;background:#a78bfa"></div></div>
+        <div class="branch-val">₱30.2M</div>
+        <div class="branch-pct">14.8%</div>
+      </div>
+      <div class="branch-row">
+        <div class="branch-rank">4</div>
+        <div class="branch-name">LDN Lanao</div>
+        <div class="branch-bar-wrap"><div class="branch-bar" style="width:49%;background:#f5a623"></div></div>
+        <div class="branch-val">₱28.6M</div>
+        <div class="branch-pct">14.0%</div>
+      </div>
+      <div class="branch-row">
+        <div class="branch-rank">5</div>
+        <div class="branch-name">Lanao Del Sur</div>
+        <div class="branch-bar-wrap"><div class="branch-bar" style="width:35%;background:#fb7185"></div></div>
+        <div class="branch-val">₱20.3M</div>
+        <div class="branch-pct">9.9%</div>
+      </div>
+      <div class="branch-row">
+        <div class="branch-rank">6</div>
+        <div class="branch-name">LDN Lotto</div>
+        <div class="branch-bar-wrap"><div class="branch-bar" style="width:22%;background:#f472b6"></div></div>
+        <div class="branch-val">₱12.9M</div>
+        <div class="branch-pct">6.3%</div>
+      </div>
+      <div class="branch-row">
+        <div class="branch-rank">7</div>
+        <div class="branch-name">LDN Set-B</div>
+        <div class="branch-bar-wrap"><div class="branch-bar" style="width:16%;background:#86efac"></div></div>
+        <div class="branch-val">₱9.3M</div>
+        <div class="branch-pct">4.6%</div>
+      </div>
+      <div class="branch-row">
+        <div class="branch-rank">8</div>
+        <div class="branch-name">LDN Balo-I</div>
+        <div class="branch-bar-wrap"><div class="branch-bar" style="width:7%;background:#94a3b8"></div></div>
+        <div class="branch-val">₱3.8M</div>
+        <div class="branch-pct">1.9%</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Gross share</div>
+      <div class="chart-wrap" style="height:260px">
+        <canvas id="pieChart" role="img" aria-label="Doughnut chart showing gross sales share by branch">Maguindanao 28.7%, Cotabato 19.8%, LDN Iligan 14.8%, LDN Lanao 14.0%, Lanao Del Sur 9.9%, LDN Lotto 6.3%, LDN Set-B 4.6%, LDN Balo-I 1.9%.</canvas>
+      </div>
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px 14px">
+        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#00c896;flex-shrink:0"></span>Maguindanao</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#4a9eff;flex-shrink:0"></span>Cotabato</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#a78bfa;flex-shrink:0"></span>LDN Iligan</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#f5a623;flex-shrink:0"></span>LDN Lanao</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#fb7185;flex-shrink:0"></span>Lanao Del Sur</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#f472b6;flex-shrink:0"></span>LDN Lotto</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#86efac;flex-shrink:0"></span>LDN Set-B</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#94a3b8;flex-shrink:0"></span>LDN Balo-I</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HITS vs KABIG ── -->
+  <div class="section-title">Hits vs Kabig analysis</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">
+        <span>Stacked breakdown per branch</span>
+        <span style="display:flex;gap:10px">
+          <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#00c896"></span>Hits</span>
+          <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#f5a623"></span>Kabig</span>
+        </span>
+      </div>
+      <div class="chart-wrap" style="height:240px">
+        <canvas id="stackedChart" role="img" aria-label="Stacked bar chart of Hits and Kabig per branch">Hits and Kabig breakdown per branch.</canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kabig rate — ranked worst to best</div>
+      <div class="kabig-row">
+        <div class="kabig-name">LDN Balo-I</div>
+        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:100%;background:#ff4d6d"></div></div>
+        <div class="kabig-rate danger">50.9%</div>
+        <div class="kabig-badge danger">CRITICAL</div>
+      </div>
+      <div class="kabig-row">
+        <div class="kabig-name">LDN Lotto</div>
+        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:97%;background:#ff4d6d"></div></div>
+        <div class="kabig-rate danger">49.4%</div>
+        <div class="kabig-badge danger">CRITICAL</div>
+      </div>
+      <div class="kabig-row">
+        <div class="kabig-name">LDN Iligan</div>
+        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:96%;background:#f5a623"></div></div>
+        <div class="kabig-rate warn">48.9%</div>
+        <div class="kabig-badge warn">MONITOR</div>
+      </div>
+      <div class="kabig-row">
+        <div class="kabig-name">LDN Lanao</div>
+        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:95%;background:#f5a623"></div></div>
+        <div class="kabig-rate warn">48.3%</div>
+        <div class="kabig-badge warn">MONITOR</div>
+      </div>
+      <div class="kabig-row">
+        <div class="kabig-name">Lanao Del Sur</div>
+        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:87%;background:#f5a623"></div></div>
+        <div class="kabig-rate warn">44.4%</div>
+        <div class="kabig-badge warn">MONITOR</div>
+      </div>
+      <div class="kabig-row">
+        <div class="kabig-name">LDN Set-B</div>
+        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:85%;background:#f5a623"></div></div>
+        <div class="kabig-rate warn">43.0%</div>
+        <div class="kabig-badge warn">MONITOR</div>
+      </div>
+      <div class="kabig-row">
+        <div class="kabig-name">Cotabato</div>
+        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:72%;background:#00c896"></div></div>
+        <div class="kabig-rate ok">36.4%</div>
+        <div class="kabig-badge ok">NORMAL</div>
+      </div>
+      <div class="kabig-row">
+        <div class="kabig-name">Maguindanao</div>
+        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:63%;background:#00c896"></div></div>
+        <div class="kabig-rate ok">31.8%</div>
+        <div class="kabig-badge ok">BEST</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── KABIG RATE CHART ── -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">
+      <span>Kabig rate % per branch — 45% threshold line</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:10px;color:#ff4d6d">
+        <span style="width:16px;height:1px;border-top:2px dashed #ff4d6d;display:inline-block"></span>45% danger threshold
+      </span>
+    </div>
+    <div class="chart-wrap" style="height:200px">
+      <canvas id="rateChart" role="img" aria-label="Bar chart showing Kabig rate percentage per branch with 45% threshold line">Kabig rates from 31.8% to 50.9%.</canvas>
+    </div>
+  </div>
+
+  <!-- ── AUDIT INSIGHTS ── -->
+  <div class="section-title">Audit insights</div>
+  <div class="insight-row">
+    <div class="insight-card danger">
+      <div class="insight-head">Critical</div>
+      <div class="insight-body"><strong>LDN Balo-I</strong> has a 50.9% Kabig rate — the highest in the network. Over half of its gross sales do not convert. Immediate operational review required.</div>
+    </div>
+    <div class="insight-card warn">
+      <div class="insight-head">Monitor</div>
+      <div class="insight-body"><strong>5 of 8 branches</strong> are above the 45% Kabig threshold. The entire LDN group (Lanao, Iligan, Balo-I, Set-B, Lotto) requires a unified review.</div>
+    </div>
+    <div class="insight-card info">
+      <div class="insight-head">Benchmark</div>
+      <div class="insight-body"><strong>Maguindanao</strong> leads in both gross (₱58.6M) and lowest Kabig ratio (31.8%). Its practices should be replicated across underperforming branches.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-head">Opportunity</div>
+      <div class="insight-body">If all branches matched Maguindanao's 31.8% Kabig rate, retained revenue would increase by an estimated <strong>₱14.6M+</strong> on current gross volume.</div>
+    </div>
+  </div>
+
+  <!-- ── ALERTS ── -->
+  <div class="section-title">Operational alerts</div>
+  <div class="card" style="margin-bottom:28px">
+    <div class="alert-row">
+      <div class="alert-icon danger">⚠</div>
+      <div class="alert-text"><strong>LDN Balo-I — Kabig Rate 50.9%</strong><br>Exceeds 50% critical threshold. Kabig (₱1.93M) nearly matches Hits (₱1.87M). Conduct immediate audit.</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-icon danger">⚠</div>
+      <div class="alert-text"><strong>LDN Lotto — Kabig Rate 49.4%</strong><br>Second-highest Kabig rate. ₱6.35M in Kabig against ₱6.50M Hits. Near-parity is a serious signal.</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-icon warn">!</div>
+      <div class="alert-text"><strong>LDN Iligan & LDN Lanao — Both above 48%</strong><br>Combined Kabig of ₱28.6M on ₱58.8M gross. Target reduction to below 40% within 30 days.</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-icon ok">✓</div>
+      <div class="alert-text"><strong>Maguindanao — Best performer</strong><br>₱58.6M gross with only 31.8% Kabig rate. Top branch by both volume and efficiency.</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-icon info">i</div>
+      <div class="alert-text"><strong>System-wide Kabig: 40.8% of ₱203.9M gross</strong><br>₱83.2M in total Kabig. Setting a 35% system target would recover an additional ~₱11.9M in retained revenue.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="wrap">
+  <footer>
+    <div class="footer-left">
+      AAC GROSS UPDATE · MAY 2026 · Generated <span id="gen-date"></span> · 8 branches · ₱203,942,705 total gross
+    </div>
+    <div class="footer-right">
+      <button class="footer-btn" onclick="window.print()">Print / Save PDF</button>
+      <button class="footer-btn" onclick="location.reload()">Refresh</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+document.getElementById('gen-date').textContent = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
+
+/* ── Animated counter ── */
+function animateCounter(el, target, prefix, suffix, duration) {
+  let start = 0, step = target / (duration / 16);
+  const fmt = v => prefix + (v/1000000).toFixed(1) + suffix;
+  const tick = () => {
+    start = Math.min(start + step, target);
+    el.textContent = fmt(start);
+    if (start < target) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+animateCounter(document.getElementById('counter-total'), 203942705, '₱', 'M', 1800);
+
+/* ── Data ── */
+const branches = ['Maguindanao','Cotabato','LDN Iligan','LDN Lanao','Lanao Del Sur','LDN Lotto','LDN Set-B','LDN Balo-I'];
+const gross  = [58606348,40331919,30226263,28564944,20277750,12852818,9281736,3800927];
+const hits   = [39968910,25649089,15457118,14766809,11282175,6503749,5290882,1868224];
+const kabig  = [18637438,14682830,14769145,13798135,8995575,6349069,3990854,1932703];
+const colors = ['#00c896','#4a9eff','#a78bfa','#f5a623','#fb7185','#f472b6','#86efac','#94a3b8'];
+const rates  = branches.map((_,i)=>Math.round(kabig[i]/(hits[i]+kabig[i])*1000)/10);
+const rateColors = rates.map(r=>r>=50?'#ff4d6d':r>=45?'#f5a623':'#00c896');
+
+/* ── Pie chart ── */
+new Chart(document.getElementById('pieChart'), {
+  type: 'doughnut',
+  data: { labels: branches, datasets: [{ data: gross, backgroundColor: colors, borderWidth: 0 }] },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '65%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: c => c.label + ': ₱' + (c.raw/1000000).toFixed(1) + 'M (' + Math.round(c.raw/203942705*1000)/10 + '%)' } }
+    }
+  }
+});
+
+/* ── Stacked bar ── */
+new Chart(document.getElementById('stackedChart'), {
+  type: 'bar',
+  data: {
+    labels: branches.map(b => b.replace('LDN ','').replace(' Del Sur','')),
+    datasets: [
+      { label: 'Hits',  data: hits,  backgroundColor: '#00c896', borderWidth: 0 },
+      { label: 'Kabig', data: kabig, backgroundColor: '#f5a623', borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.dataset.label + ': ₱' + (c.raw/1000000).toFixed(2) + 'M' } } },
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { color: '#8899b8', font: { size: 10 }, autoSkip: false, maxRotation: 35 } },
+      y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899b8', font: { size: 10 }, callback: v => '₱' + (v/1000000).toFixed(0) + 'M' } }
+    }
+  }
+});
+
+/* ── Rate chart with threshold ── */
+const rateCtx = document.getElementById('rateChart');
+const rateChartByKabig = ['LDN Balo-I','LDN Lotto','LDN Iligan','LDN Lanao','Lanao Del Sur','LDN Set-B','Cotabato','Maguindanao'];
+const ratesSorted = [50.9,49.4,48.9,48.3,44.4,43.0,36.4,31.8];
+const rateColorsSorted = ratesSorted.map(r=>r>=50?'#ff4d6d':r>=45?'#f5a623':'#00c896');
+
+new Chart(rateCtx, {
+  type: 'bar',
+  data: {
+    labels: rateChartByKabig,
+    datasets: [{ label: 'Kabig %', data: ratesSorted, backgroundColor: rateColorsSorted, borderWidth: 0, borderRadius: 4 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: c => c.raw + '% kabig rate' } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#8899b8', font: { size: 11 }, autoSkip: false, maxRotation: 30 } },
+      y: { min: 0, max: 60, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899b8', font: { size: 10 }, callback: v => v + '%' } }
+    }
+  },
+  plugins: [{
+    id: 'threshold',
+    afterDraw(chart) {
+      const { ctx, chartArea, scales } = chart;
+      const y = scales.y.getPixelForValue(45);
+      ctx.save();
+      ctx.strokeStyle = '#ff4d6d';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 4]);
+      ctx.globalAlpha = 0.7;
+      ctx.beginPath();
+      ctx.moveTo(chartArea.left, y);
+      ctx.lineTo(chartArea.right, y);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+  }]
+});
+</script>
+</body>
+</html>
