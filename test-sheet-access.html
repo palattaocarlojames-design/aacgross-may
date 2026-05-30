@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sheet Structure Verification</title>
+<style>
+body { font-family: monospace; background: #0a1628; color: #e8eef8; padding: 20px; }
+.container { max-width: 1000px; margin: 0 auto; }
+pre { background: #111f38; padding: 20px; border-radius: 8px; overflow-x: auto; border: 1px solid rgba(255,255,255,0.1); }
+.status { padding: 10px 15px; border-radius: 6px; margin: 10px 0; }
+.success { background: rgba(0,200,150,0.2); color: #00c896; border: 1px solid #00c896; }
+.error { background: rgba(255,77,109,0.2); color: #ff4d6d; border: 1px solid #ff4d6d; }
+.loading { background: rgba(245,166,35,0.2); color: #f5a623; border: 1px solid #f5a623; }
+h2 { margin-top: 30px; color: #00c896; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📋 Google Sheet Structure Verification</h1>
+
+<div id="status" class="status loading">Analyzing sheet structure...</div>
+
+<h2>Sheet Metadata</h2>
+<pre id="metadata">Loading...</pre>
+
+<h2>Raw Data (First 10 rows)</h2>
+<pre id="data">Loading...</pre>
+
+<h2>Data Structure Analysis</h2>
+<pre id="analysis">Loading...</pre>
+
+</div>
+
+<script>
+const SHEET_ID = '1F2FL7Si5GeJofEW58VfE8qFLel1gYp62ZMGTOywjGyc';
+const API_KEY = 'AIzaSyDx56pf4F_1Nn3qqNfG1lPy0vHMlL3vRBQ';
+
+async function verifySheetStructure() {
+  const statusEl = document.getElementById('status');
+  const metadataEl = document.getElementById('metadata');
+  const dataEl = document.getElementById('data');
+  const analysisEl = document.getElementById('analysis');
+
+  try {
+    // Test 1: Get spreadsheet metadata
+    console.log('Fetching spreadsheet metadata...');
+    const metaUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?key=${API_KEY}`;
+    const metaResponse = await fetch(metaUrl);
+    
+    if (!metaResponse.ok) {
+      throw new Error(`Metadata fetch failed: HTTP ${metaResponse.status}`);
+    }
+    
+    const metadata = await metaResponse.json();
+    metadataEl.textContent = JSON.stringify(metadata, null, 2);
+    
+    // Extract sheet names
+    const sheetNames = metadata.sheets ? metadata.sheets.map(s => s.properties.title) : [];
+    console.log('Sheet names found:', sheetNames);
+    
+    // Test 2: Get data from Sheet1
+    console.log('Fetching data from Sheet1...');
+    const dataUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A1:H100?key=${API_KEY}`;
+    const dataResponse = await fetch(dataUrl);
+    
+    if (!dataResponse.ok) {
+      throw new Error(`Data fetch failed: HTTP ${dataResponse.status}`);
+    }
+    
+    const sheetData = await dataResponse.json();
+    const rows = sheetData.values || [];
+    
+    // Display raw data
+    dataEl.textContent = JSON.stringify({
+      range: sheetData.range,
+      totalRows: rows.length,
+      values: rows.slice(0, 10)
+    }, null, 2);
+    
+    // Test 3: Analyze structure
+    const analysis = analyzeStructure(rows);
+    analysisEl.textContent = analysis;
+    
+    // Update status
+    statusEl.className = 'status success';
+    statusEl.innerHTML = `✓ <strong>Connection Successful!</strong> Sheet is accessible and contains ${rows.length} rows.`;
+    
+  } catch (error) {
+    console.error('Verification failed:', error);
+    statusEl.className = 'status error';
+    statusEl.innerHTML = `✗ <strong>Error:</strong> ${error.message}`;
+    metadataEl.textContent = error.stack;
+  }
+}
+
+function analyzeStructure(rows) {
+  if (rows.length === 0) {
+    return 'ERROR: No data found in sheet';
+  }
+  
+  const header = rows[0];
+  const analysis = {
+    'Header Row': header,
+    'Total Rows (including header)': rows.length,
+    'Data Rows': rows.length - 1,
+    'Columns': header.length,
+    'Column Names': header,
+    'Expected Columns for Dashboard': {
+      'Column A (Branch)': header[0],
+      'Column B (Gross)': header[1],
+      'Column C (Hits)': header[2],
+      'Column D (Kabig)': header[3]
+    },
+    'Sample Data (rows 2-5)': rows.slice(1, 5),
+    'Data Type Validation': validateDataTypes(rows)
+  };
+  
+  return JSON.stringify(analysis, null, 2);
+}
+
+function validateDataTypes(rows) {
+  if (rows.length < 2) return 'Not enough data rows';
+  
+  const validation = {
+    'Column A (Branch names)': typeof rows[1][0],
+    'Column B (Gross - should be number)': isNumeric(rows[1][1]) ? 'VALID ✓' : 'INVALID ✗ - ' + rows[1][1],
+    'Column C (Hits - should be number)': isNumeric(rows[1][2]) ? 'VALID ✓' : 'INVALID ✗ - ' + rows[1][2],
+    'Column D (Kabig - should be number)': isNumeric(rows[1][3]) ? 'VALID ✓' : 'INVALID ✗ - ' + rows[1][3]
+  };
+  
+  return validation;
+}
+
+function isNumeric(value) {
+  const num = parseInt(value);
+  return !isNaN(num) && value !== '';
+}
+
+// Run verification
+verifySheetStructure();
+</script>
+
+</body>
+</html>
