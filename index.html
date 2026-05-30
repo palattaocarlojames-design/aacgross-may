@@ -360,7 +360,7 @@ footer {
         <div class="live-pill" id="live-pill"><span class="live-dot"></span>LIVE</div>
         <div class="period-badge">MAY 2026</div>
         <button class="export-btn" onclick="window.print()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
           Export PDF
         </button>
       </div>
@@ -690,7 +690,7 @@ function renderInsights(branches, gross, hits, kabig, rates) {
   const html = `
     <div class="insight-card danger">
       <div class="insight-head">Critical</div>
-      <div class="insight-body"><strong>${branches[worstIdx]}</strong> has a ${rates[worstIdx]}% Kabig rate — the highest in the network. Over half of its gross sales do not convert. Immediate operational review required.</div>
+      <div class="insight-body"><strong>${branches[worstIdx]}</strong> has a ${rates[worstIdx]}% Kabig rate — the highest in the network. Over half of its gross sales do not convert. Immediate operational intervention required.</div>
     </div>
     <div class="insight-card warn">
       <div class="insight-head">Monitor</div>
@@ -702,7 +702,7 @@ function renderInsights(branches, gross, hits, kabig, rates) {
     </div>
     <div class="insight-card">
       <div class="insight-head">Opportunity</div>
-      <div class="insight-body">If all branches matched ${branches[bestIdx]}'s ${rates[bestIdx]}% Kabig rate, retained revenue would increase by an estimated <strong>₱${((totalKabig - (totalGross * rates[bestIdx] / 100))/1000000).toFixed(1)}M+</strong> on current gross volume.</div>
+      <div class="insight-body">If all branches matched ${branches[bestIdx]}'s ${rates[bestIdx]}% Kabig rate, retained revenue would increase by an estimated <strong>₱${((totalKabig - (totalGross * rates[bestIdx] / 100)) / 1000000).toFixed(1)}M</strong>.</div>
     </div>
   `;
   
@@ -721,15 +721,15 @@ function renderAlerts(branches, gross, hits, kabig, rates) {
   const html = `
     <div class="alert-row">
       <div class="alert-icon danger">⚠</div>
-      <div class="alert-text"><strong>${branches[worstIdx]} — Kabig Rate ${rates[worstIdx]}%</strong><br>Exceeds 50% critical threshold. Kabig (₱${(kabig[worstIdx]/1000000).toFixed(2)}M) nearly matches Hits (₱${(hits[worstIdx]/1000000).toFixed(2)}M). Conduct immediate audit.</div>
+      <div class="alert-text"><strong>${branches[worstIdx]} — Kabig Rate ${rates[worstIdx]}%</strong><br>Exceeds 50% critical threshold. Kabig (₱${(kabig[worstIdx]/1000000).toFixed(2)}M) nearly matches hits. Review sales process immediately.</div>
     </div>
     <div class="alert-row">
       <div class="alert-icon danger">⚠</div>
-      <div class="alert-text"><strong>${branches[secondWorstIdx]} — Kabig Rate ${rates[secondWorstIdx]}%</strong><br>Second-highest Kabig rate. ₱${(kabig[secondWorstIdx]/1000000).toFixed(2)}M in Kabig against ₱${(hits[secondWorstIdx]/1000000).toFixed(2)}M Hits. Near-parity is a serious signal.</div>
+      <div class="alert-text"><strong>${branches[secondWorstIdx]} — Kabig Rate ${rates[secondWorstIdx]}%</strong><br>Second-highest Kabig rate. ₱${(kabig[secondWorstIdx]/1000000).toFixed(2)}M in Kabig requires attention.</div>
     </div>
     <div class="alert-row">
       <div class="alert-icon warn">!</div>
-      <div class="alert-text"><strong>System-wide above 45% — ${rates.filter(r => r > 45).length} branches</strong><br>Combined high Kabig affecting overall retention. Target reduction to below 40% within 30 days.</div>
+      <div class="alert-text"><strong>System-wide above 45% — ${rates.filter(r => r > 45).length} branches</strong><br>Combined high Kabig affecting overall retention. Target reduction to below 40% network-wide.</div>
     </div>
     <div class="alert-row">
       <div class="alert-icon ok">✓</div>
@@ -737,7 +737,7 @@ function renderAlerts(branches, gross, hits, kabig, rates) {
     </div>
     <div class="alert-row">
       <div class="alert-icon info">i</div>
-      <div class="alert-text"><strong>System-wide Kabig: ${Math.round(totalKabig/totalGross*1000)/10}% of ₱${(totalGross/1000000).toFixed(1)}M gross</strong><br>₱${(totalKabig/1000000).toFixed(1)}M in total Kabig. Setting a 35% system target would recover an additional ~₱${((totalKabig - (totalGross * 0.35))/1000000).toFixed(1)}M in retained revenue.</div>
+      <div class="alert-text"><strong>System-wide Kabig: ${Math.round(totalKabig/totalGross*1000)/10}% of ₱${(totalGross/1000000).toFixed(1)}M gross</strong><br>₱${(totalKabig/1000000).toFixed(1)}M total Kabig across all branches this period.</div>
     </div>
   `;
   
@@ -883,13 +883,7 @@ function scheduleNextUpdate() {
 }
 
 // ── Initial load ──
-document.getElementById('gen-date').textContent = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
 fetchSheetData();
-
-// Optional: Set document title with date
-setInterval(() => {
-  document.getElementById('gen-date').textContent = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
-}, 60000);
 </script>
 
 </body>
