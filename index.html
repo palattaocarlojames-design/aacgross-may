@@ -92,11 +92,14 @@ header {
   border-radius: 20px; padding: 4px 12px;
   font-family: var(--font-mono); font-size: 11px; color: var(--teal);
 }
+.live-pill.loading { background: rgba(245,166,35,0.12); border-color: rgba(245,166,35,0.25); color: var(--amber); }
 .live-dot {
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--teal); animation: blink 1.4s infinite;
 }
+.live-pill.loading .live-dot { background: var(--amber); animation: spin 1s linear infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .period-badge {
   font-family: var(--font-mono); font-size: 11px;
   color: var(--text2); border: 1px solid var(--border2);
@@ -354,7 +357,7 @@ footer {
         <div class="logo-text">AAC <span>OPS</span></div>
       </div>
       <div class="header-meta">
-        <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+        <div class="live-pill" id="live-pill"><span class="live-dot"></span>LIVE</div>
         <div class="period-badge">MAY 2026</div>
         <button class="export-btn" onclick="window.print()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -371,47 +374,18 @@ footer {
   <div class="hero">
     <div>
       <div class="hero-title">Gross Sales<br><em>Operations</em> Dashboard</div>
-      <div class="hero-sub">AAC GROSS UPDATE · 8 BRANCHES · MAY 2026</div>
+      <div class="hero-sub" id="hero-sub">AAC GROSS UPDATE · LOADING...</div>
     </div>
     <div class="hero-total">
       <div class="hero-total-label">Total Gross</div>
       <div class="hero-total-val" id="counter-total">₱0</div>
-      <div class="hero-total-sub">across all 8 branches</div>
+      <div class="hero-total-sub" id="branches-count">loading...</div>
     </div>
   </div>
 
   <!-- ── KPI CARDS ── -->
-  <div class="kpi-row">
-    <div class="kpi-card teal" style="animation-delay:0.05s">
-      <div class="kpi-label">Total Gross Sales</div>
-      <div class="kpi-value teal">₱203.9M</div>
-      <div class="kpi-delta up">↑ 8 branches reporting</div>
-    </div>
-    <div class="kpi-card blue" style="animation-delay:0.1s">
-      <div class="kpi-label">Total Hits</div>
-      <div class="kpi-value">₱120.8M</div>
-      <div class="kpi-delta">59.2% of gross</div>
-    </div>
-    <div class="kpi-card amber" style="animation-delay:0.15s">
-      <div class="kpi-label">Total Kabig</div>
-      <div class="kpi-value amber">₱83.2M</div>
-      <div class="kpi-delta warn">40.8% of gross</div>
-    </div>
-    <div class="kpi-card teal" style="animation-delay:0.2s">
-      <div class="kpi-label">Top Branch</div>
-      <div class="kpi-value" style="font-size:17px">Maguindanao</div>
-      <div class="kpi-delta up">₱58.6M · 28.7% share</div>
-    </div>
-    <div class="kpi-card red" style="animation-delay:0.25s">
-      <div class="kpi-label">Highest Kabig Rate</div>
-      <div class="kpi-value" style="font-size:17px">LDN Balo-I</div>
-      <div class="kpi-delta danger">50.9% · needs review</div>
-    </div>
-    <div class="kpi-card amber" style="animation-delay:0.3s">
-      <div class="kpi-label">Branches Above 45%</div>
-      <div class="kpi-value amber">5 / 8</div>
-      <div class="kpi-delta warn">flagged for monitoring</div>
-    </div>
+  <div class="kpi-row" id="kpi-container">
+    <div style="text-align: center; padding: 24px; color: var(--text2);">Loading data...</div>
   </div>
 
   <!-- ── BRANCH RANKINGS + GROSS CHART ── -->
@@ -419,78 +393,14 @@ footer {
   <div class="grid3">
     <div class="card">
       <div class="card-title">Gross sales by branch — ranked</div>
-      <div class="branch-row">
-        <div class="branch-rank gold">1</div>
-        <div class="branch-name">Maguindanao</div>
-        <div class="branch-bar-wrap"><div class="branch-bar" style="width:100%;background:#00c896"></div></div>
-        <div class="branch-val">₱58.6M</div>
-        <div class="branch-pct">28.7%</div>
-      </div>
-      <div class="branch-row">
-        <div class="branch-rank">2</div>
-        <div class="branch-name">Cotabato</div>
-        <div class="branch-bar-wrap"><div class="branch-bar" style="width:69%;background:#4a9eff"></div></div>
-        <div class="branch-val">₱40.3M</div>
-        <div class="branch-pct">19.8%</div>
-      </div>
-      <div class="branch-row">
-        <div class="branch-rank">3</div>
-        <div class="branch-name">LDN Iligan</div>
-        <div class="branch-bar-wrap"><div class="branch-bar" style="width:52%;background:#a78bfa"></div></div>
-        <div class="branch-val">₱30.2M</div>
-        <div class="branch-pct">14.8%</div>
-      </div>
-      <div class="branch-row">
-        <div class="branch-rank">4</div>
-        <div class="branch-name">LDN Lanao</div>
-        <div class="branch-bar-wrap"><div class="branch-bar" style="width:49%;background:#f5a623"></div></div>
-        <div class="branch-val">₱28.6M</div>
-        <div class="branch-pct">14.0%</div>
-      </div>
-      <div class="branch-row">
-        <div class="branch-rank">5</div>
-        <div class="branch-name">Lanao Del Sur</div>
-        <div class="branch-bar-wrap"><div class="branch-bar" style="width:35%;background:#fb7185"></div></div>
-        <div class="branch-val">₱20.3M</div>
-        <div class="branch-pct">9.9%</div>
-      </div>
-      <div class="branch-row">
-        <div class="branch-rank">6</div>
-        <div class="branch-name">LDN Lotto</div>
-        <div class="branch-bar-wrap"><div class="branch-bar" style="width:22%;background:#f472b6"></div></div>
-        <div class="branch-val">₱12.9M</div>
-        <div class="branch-pct">6.3%</div>
-      </div>
-      <div class="branch-row">
-        <div class="branch-rank">7</div>
-        <div class="branch-name">LDN Set-B</div>
-        <div class="branch-bar-wrap"><div class="branch-bar" style="width:16%;background:#86efac"></div></div>
-        <div class="branch-val">₱9.3M</div>
-        <div class="branch-pct">4.6%</div>
-      </div>
-      <div class="branch-row">
-        <div class="branch-rank">8</div>
-        <div class="branch-name">LDN Balo-I</div>
-        <div class="branch-bar-wrap"><div class="branch-bar" style="width:7%;background:#94a3b8"></div></div>
-        <div class="branch-val">₱3.8M</div>
-        <div class="branch-pct">1.9%</div>
-      </div>
+      <div id="branch-table">Loading...</div>
     </div>
     <div class="card">
       <div class="card-title">Gross share</div>
       <div class="chart-wrap" style="height:260px">
-        <canvas id="pieChart" role="img" aria-label="Doughnut chart showing gross sales share by branch">Maguindanao 28.7%, Cotabato 19.8%, LDN Iligan 14.8%, LDN Lanao 14.0%, Lanao Del Sur 9.9%, LDN Lotto 6.3%, LDN Set-B 4.6%, LDN Balo-I 1.9%.</canvas>
+        <canvas id="pieChart" role="img" aria-label="Doughnut chart showing gross sales share by branch"></canvas>
       </div>
-      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px 14px">
-        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#00c896;flex-shrink:0"></span>Maguindanao</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#4a9eff;flex-shrink:0"></span>Cotabato</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#a78bfa;flex-shrink:0"></span>LDN Iligan</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#f5a623;flex-shrink:0"></span>LDN Lanao</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#fb7185;flex-shrink:0"></span>Lanao Del Sur</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#f472b6;flex-shrink:0"></span>LDN Lotto</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#86efac;flex-shrink:0"></span>LDN Set-B</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:#94a3b8;flex-shrink:0"></span>LDN Balo-I</span>
-      </div>
+      <div id="pie-legend" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px 14px"></div>
     </div>
   </div>
 
@@ -506,59 +416,12 @@ footer {
         </span>
       </div>
       <div class="chart-wrap" style="height:240px">
-        <canvas id="stackedChart" role="img" aria-label="Stacked bar chart of Hits and Kabig per branch">Hits and Kabig breakdown per branch.</canvas>
+        <canvas id="stackedChart" role="img" aria-label="Stacked bar chart of Hits and Kabig per branch"></canvas>
       </div>
     </div>
     <div class="card">
       <div class="card-title">Kabig rate — ranked worst to best</div>
-      <div class="kabig-row">
-        <div class="kabig-name">LDN Balo-I</div>
-        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:100%;background:#ff4d6d"></div></div>
-        <div class="kabig-rate danger">50.9%</div>
-        <div class="kabig-badge danger">CRITICAL</div>
-      </div>
-      <div class="kabig-row">
-        <div class="kabig-name">LDN Lotto</div>
-        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:97%;background:#ff4d6d"></div></div>
-        <div class="kabig-rate danger">49.4%</div>
-        <div class="kabig-badge danger">CRITICAL</div>
-      </div>
-      <div class="kabig-row">
-        <div class="kabig-name">LDN Iligan</div>
-        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:96%;background:#f5a623"></div></div>
-        <div class="kabig-rate warn">48.9%</div>
-        <div class="kabig-badge warn">MONITOR</div>
-      </div>
-      <div class="kabig-row">
-        <div class="kabig-name">LDN Lanao</div>
-        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:95%;background:#f5a623"></div></div>
-        <div class="kabig-rate warn">48.3%</div>
-        <div class="kabig-badge warn">MONITOR</div>
-      </div>
-      <div class="kabig-row">
-        <div class="kabig-name">Lanao Del Sur</div>
-        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:87%;background:#f5a623"></div></div>
-        <div class="kabig-rate warn">44.4%</div>
-        <div class="kabig-badge warn">MONITOR</div>
-      </div>
-      <div class="kabig-row">
-        <div class="kabig-name">LDN Set-B</div>
-        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:85%;background:#f5a623"></div></div>
-        <div class="kabig-rate warn">43.0%</div>
-        <div class="kabig-badge warn">MONITOR</div>
-      </div>
-      <div class="kabig-row">
-        <div class="kabig-name">Cotabato</div>
-        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:72%;background:#00c896"></div></div>
-        <div class="kabig-rate ok">36.4%</div>
-        <div class="kabig-badge ok">NORMAL</div>
-      </div>
-      <div class="kabig-row">
-        <div class="kabig-name">Maguindanao</div>
-        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:63%;background:#00c896"></div></div>
-        <div class="kabig-rate ok">31.8%</div>
-        <div class="kabig-badge ok">BEST</div>
-      </div>
+      <div id="kabig-table">Loading...</div>
     </div>
   </div>
 
@@ -571,54 +434,20 @@ footer {
       </span>
     </div>
     <div class="chart-wrap" style="height:200px">
-      <canvas id="rateChart" role="img" aria-label="Bar chart showing Kabig rate percentage per branch with 45% threshold line">Kabig rates from 31.8% to 50.9%.</canvas>
+      <canvas id="rateChart" role="img" aria-label="Bar chart showing Kabig rate percentage per branch with 45% threshold line"></canvas>
     </div>
   </div>
 
   <!-- ── AUDIT INSIGHTS ── -->
   <div class="section-title">Audit insights</div>
-  <div class="insight-row">
-    <div class="insight-card danger">
-      <div class="insight-head">Critical</div>
-      <div class="insight-body"><strong>LDN Balo-I</strong> has a 50.9% Kabig rate — the highest in the network. Over half of its gross sales do not convert. Immediate operational review required.</div>
-    </div>
-    <div class="insight-card warn">
-      <div class="insight-head">Monitor</div>
-      <div class="insight-body"><strong>5 of 8 branches</strong> are above the 45% Kabig threshold. The entire LDN group (Lanao, Iligan, Balo-I, Set-B, Lotto) requires a unified review.</div>
-    </div>
-    <div class="insight-card info">
-      <div class="insight-head">Benchmark</div>
-      <div class="insight-body"><strong>Maguindanao</strong> leads in both gross (₱58.6M) and lowest Kabig ratio (31.8%). Its practices should be replicated across underperforming branches.</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-head">Opportunity</div>
-      <div class="insight-body">If all branches matched Maguindanao's 31.8% Kabig rate, retained revenue would increase by an estimated <strong>₱14.6M+</strong> on current gross volume.</div>
-    </div>
+  <div class="insight-row" id="insights-container">
+    <div style="text-align: center; padding: 24px; color: var(--text2);">Loading insights...</div>
   </div>
 
   <!-- ── ALERTS ── -->
   <div class="section-title">Operational alerts</div>
   <div class="card" style="margin-bottom:28px">
-    <div class="alert-row">
-      <div class="alert-icon danger">⚠</div>
-      <div class="alert-text"><strong>LDN Balo-I — Kabig Rate 50.9%</strong><br>Exceeds 50% critical threshold. Kabig (₱1.93M) nearly matches Hits (₱1.87M). Conduct immediate audit.</div>
-    </div>
-    <div class="alert-row">
-      <div class="alert-icon danger">⚠</div>
-      <div class="alert-text"><strong>LDN Lotto — Kabig Rate 49.4%</strong><br>Second-highest Kabig rate. ₱6.35M in Kabig against ₱6.50M Hits. Near-parity is a serious signal.</div>
-    </div>
-    <div class="alert-row">
-      <div class="alert-icon warn">!</div>
-      <div class="alert-text"><strong>LDN Iligan & LDN Lanao — Both above 48%</strong><br>Combined Kabig of ₱28.6M on ₱58.8M gross. Target reduction to below 40% within 30 days.</div>
-    </div>
-    <div class="alert-row">
-      <div class="alert-icon ok">✓</div>
-      <div class="alert-text"><strong>Maguindanao — Best performer</strong><br>₱58.6M gross with only 31.8% Kabig rate. Top branch by both volume and efficiency.</div>
-    </div>
-    <div class="alert-row">
-      <div class="alert-icon info">i</div>
-      <div class="alert-text"><strong>System-wide Kabig: 40.8% of ₱203.9M gross</strong><br>₱83.2M in total Kabig. Setting a 35% system target would recover an additional ~₱11.9M in retained revenue.</div>
-    </div>
+    <div id="alerts-container">Loading alerts...</div>
   </div>
 
 </div>
@@ -626,8 +455,8 @@ footer {
 <!-- ── FOOTER ── -->
 <div class="wrap">
   <footer>
-    <div class="footer-left">
-      AAC GROSS UPDATE · MAY 2026 · Generated <span id="gen-date"></span> · 8 branches · ₱203,942,705 total gross
+    <div class="footer-left" id="footer-text">
+      AAC GROSS UPDATE · Generating from Google Sheets...
     </div>
     <div class="footer-right">
       <button class="footer-btn" onclick="window.print()">Print / Save PDF</button>
@@ -637,9 +466,400 @@ footer {
 </div>
 
 <script>
-document.getElementById('gen-date').textContent = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
+// ── Google Sheets Configuration ──
+const SHEET_ID = '1F2FL7Si5GeJofEW58VfE8qFLel1gYp62ZMGTOywjGyc';
+const API_KEY = 'AIzaSyDx56pf4F_1Nn3qqNfG1lPy0vHMlL3vRBQ'; // Replace with your API key
+const RANGE = 'Sheet1!A1:H100';
 
-/* ── Animated counter ── */
+// ── Global state ──
+let dashboardData = null;
+let charts = {};
+
+// ── Fetch data from Google Sheets ──
+async function fetchSheetData() {
+  const livePill = document.getElementById('live-pill');
+  livePill.classList.add('loading');
+  
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    
+    const data = await response.json();
+    const rows = data.values || [];
+    
+    // Parse sheet data (expecting: Branch | Gross | Hits | Kabig | ...)
+    const branches = [];
+    const gross = [];
+    const hits = [];
+    const kabig = [];
+    
+    // Skip header row (row 0)
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row[0]) break; // Stop at empty row
+      
+      branches.push(row[0]);
+      gross.push(parseInt(row[1]) || 0);
+      hits.push(parseInt(row[2]) || 0);
+      kabig.push(parseInt(row[3]) || 0);
+    }
+    
+    dashboardData = {
+      branches,
+      gross,
+      hits,
+      kabig,
+      colors: ['#00c896','#4a9eff','#a78bfa','#f5a623','#fb7185','#f472b6','#86efac','#94a3b8'],
+      rates: branches.map((_,i) => Math.round(kabig[i]/(hits[i]+kabig[i])*1000)/10)
+    };
+    
+    livePill.classList.remove('loading');
+    renderDashboard();
+    scheduleNextUpdate();
+    
+  } catch (error) {
+    console.error('Error fetching sheet:', error);
+    livePill.classList.add('loading');
+    // Retry in 10 seconds
+    setTimeout(fetchSheetData, 10000);
+  }
+}
+
+// ── Render entire dashboard ──
+function renderDashboard() {
+  if (!dashboardData) return;
+  
+  const { branches, gross, hits, kabig, colors, rates } = dashboardData;
+  const totalGross = gross.reduce((a,b) => a+b, 0);
+  
+  // Update hero
+  document.getElementById('branches-count').textContent = `across all ${branches.length} branches`;
+  document.getElementById('hero-sub').textContent = `AAC GROSS UPDATE · ${branches.length} BRANCHES · MAY 2026`;
+  animateCounter(document.getElementById('counter-total'), totalGross, '₱', 'M', 1800);
+  
+  // Update KPIs
+  renderKPIs(branches, gross, hits, kabig, rates);
+  
+  // Update branch table
+  renderBranchTable(branches, gross, hits, colors);
+  
+  // Update kabig table
+  renderKabigTable(branches, kabig, hits, rates);
+  
+  // Update insights and alerts
+  renderInsights(branches, gross, hits, kabig, rates);
+  renderAlerts(branches, gross, hits, kabig, rates);
+  
+  // Update footer
+  const now = new Date();
+  document.getElementById('footer-text').textContent = 
+    `AAC GROSS UPDATE · MAY 2026 · Generated ${now.toLocaleDateString('en-PH')} · ${branches.length} branches · ₱${(totalGross/1000000).toFixed(1)}M total gross`;
+  
+  // Render charts
+  renderCharts(branches, gross, hits, kabig, colors, rates);
+}
+
+// ── Render KPI cards ──
+function renderKPIs(branches, gross, hits, kabig, rates) {
+  const totalGross = gross.reduce((a,b) => a+b, 0);
+  const totalHits = hits.reduce((a,b) => a+b, 0);
+  const totalKabig = kabig.reduce((a,b) => a+b, 0);
+  
+  const topBranchIdx = gross.indexOf(Math.max(...gross));
+  const topBranchName = branches[topBranchIdx];
+  const topBranchGross = gross[topBranchIdx];
+  
+  const worstKabigIdx = rates.indexOf(Math.max(...rates));
+  const worstKabigName = branches[worstKabigIdx];
+  const worstKabigRate = rates[worstKabigIdx];
+  
+  const aboveThreshold = rates.filter(r => r > 45).length;
+  
+  const kpiHTML = `
+    <div class="kpi-card teal" style="animation-delay:0.05s">
+      <div class="kpi-label">Total Gross Sales</div>
+      <div class="kpi-value teal">₱${(totalGross/1000000).toFixed(1)}M</div>
+      <div class="kpi-delta up">↑ ${branches.length} branches reporting</div>
+    </div>
+    <div class="kpi-card blue" style="animation-delay:0.1s">
+      <div class="kpi-label">Total Hits</div>
+      <div class="kpi-value">₱${(totalHits/1000000).toFixed(1)}M</div>
+      <div class="kpi-delta">${Math.round(totalHits/totalGross*1000)/10}% of gross</div>
+    </div>
+    <div class="kpi-card amber" style="animation-delay:0.15s">
+      <div class="kpi-label">Total Kabig</div>
+      <div class="kpi-value amber">₱${(totalKabig/1000000).toFixed(1)}M</div>
+      <div class="kpi-delta warn">${Math.round(totalKabig/totalGross*1000)/10}% of gross</div>
+    </div>
+    <div class="kpi-card teal" style="animation-delay:0.2s">
+      <div class="kpi-label">Top Branch</div>
+      <div class="kpi-value" style="font-size:17px">${topBranchName}</div>
+      <div class="kpi-delta up">₱${(topBranchGross/1000000).toFixed(1)}M · ${Math.round(topBranchGross/totalGross*1000)/10}% share</div>
+    </div>
+    <div class="kpi-card red" style="animation-delay:0.25s">
+      <div class="kpi-label">Highest Kabig Rate</div>
+      <div class="kpi-value" style="font-size:17px">${worstKabigName}</div>
+      <div class="kpi-delta danger">${worstKabigRate}% · needs review</div>
+    </div>
+    <div class="kpi-card amber" style="animation-delay:0.3s">
+      <div class="kpi-label">Branches Above 45%</div>
+      <div class="kpi-value amber">${aboveThreshold} / ${branches.length}</div>
+      <div class="kpi-delta warn">flagged for monitoring</div>
+    </div>
+  `;
+  
+  document.getElementById('kpi-container').innerHTML = kpiHTML;
+}
+
+// ── Render branch rankings table ──
+function renderBranchTable(branches, gross, hits, colors) {
+  const totalGross = gross.reduce((a,b) => a+b, 0);
+  
+  // Sort by gross descending
+  const sorted = branches.map((b, i) => ({ name: b, gross: gross[i], idx: i }))
+    .sort((a, b) => b.gross - a.gross);
+  
+  let html = '';
+  sorted.forEach((item, rank) => {
+    const width = (item.gross / Math.max(...gross)) * 100;
+    const pct = Math.round(item.gross / totalGross * 1000) / 10;
+    html += `
+      <div class="branch-row">
+        <div class="branch-rank ${rank === 0 ? 'gold' : ''}">${rank + 1}</div>
+        <div class="branch-name">${item.name}</div>
+        <div class="branch-bar-wrap"><div class="branch-bar" style="width:${width}%;background:${colors[item.idx]}"></div></div>
+        <div class="branch-val">₱${(item.gross/1000000).toFixed(1)}M</div>
+        <div class="branch-pct">${pct}%</div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('branch-table').innerHTML = html;
+}
+
+// ── Render kabig rate table ──
+function renderKabigTable(branches, kabig, hits, rates) {
+  const sorted = branches.map((b, i) => ({ 
+    name: b, 
+    rate: rates[i], 
+    kabig: kabig[i], 
+    idx: i 
+  })).sort((a, b) => b.rate - a.rate);
+  
+  let html = '';
+  sorted.forEach((item) => {
+    const width = (item.rate / 60) * 100;
+    let statusClass = 'ok', statusText = 'NORMAL';
+    if (item.rate >= 50) {
+      statusClass = 'danger';
+      statusText = 'CRITICAL';
+    } else if (item.rate >= 45) {
+      statusClass = 'warn';
+      statusText = 'MONITOR';
+    } else if (item.rate <= 35) {
+      statusText = 'BEST';
+    }
+    
+    html += `
+      <div class="kabig-row">
+        <div class="kabig-name">${item.name}</div>
+        <div class="kabig-bar-wrap"><div class="kabig-bar" style="width:${width}%;background:${statusClass === 'ok' ? '#00c896' : statusClass === 'warn' ? '#f5a623' : '#ff4d6d'}"></div></div>
+        <div class="kabig-rate ${statusClass}">${item.rate}%</div>
+        <div class="kabig-badge ${statusClass}">${statusText}</div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('kabig-table').innerHTML = html;
+}
+
+// ── Render insights ──
+function renderInsights(branches, gross, hits, kabig, rates) {
+  const totalGross = gross.reduce((a,b) => a+b, 0);
+  const totalKabig = kabig.reduce((a,b) => a+b, 0);
+  
+  const worstIdx = rates.indexOf(Math.max(...rates));
+  const bestIdx = rates.indexOf(Math.min(...rates));
+  const aboveThreshold = rates.filter(r => r > 45).length;
+  
+  const potentialSavings = totalGross * (Math.min(...rates) / 100);
+  const currentRetention = totalGross * ((100 - Math.min(...rates)) / 100);
+  
+  const html = `
+    <div class="insight-card danger">
+      <div class="insight-head">Critical</div>
+      <div class="insight-body"><strong>${branches[worstIdx]}</strong> has a ${rates[worstIdx]}% Kabig rate — the highest in the network. Over half of its gross sales do not convert. Immediate operational review required.</div>
+    </div>
+    <div class="insight-card warn">
+      <div class="insight-head">Monitor</div>
+      <div class="insight-body"><strong>${aboveThreshold} of ${branches.length} branches</strong> are above the 45% Kabig threshold. Focus attention on this group to improve conversion.</div>
+    </div>
+    <div class="insight-card info">
+      <div class="insight-head">Benchmark</div>
+      <div class="insight-body"><strong>${branches[bestIdx]}</strong> leads in efficiency with ${rates[bestIdx]}% Kabig rate. Its practices should be replicated across underperforming branches.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-head">Opportunity</div>
+      <div class="insight-body">If all branches matched ${branches[bestIdx]}'s ${rates[bestIdx]}% Kabig rate, retained revenue would increase by an estimated <strong>₱${((totalKabig - (totalGross * rates[bestIdx] / 100))/1000000).toFixed(1)}M+</strong> on current gross volume.</div>
+    </div>
+  `;
+  
+  document.getElementById('insights-container').innerHTML = html;
+}
+
+// ── Render alerts ──
+function renderAlerts(branches, gross, hits, kabig, rates) {
+  const totalGross = gross.reduce((a,b) => a+b, 0);
+  const totalKabig = kabig.reduce((a,b) => a+b, 0);
+  
+  const worstIdx = rates.indexOf(Math.max(...rates));
+  const bestIdx = rates.indexOf(Math.min(...rates));
+  const secondWorstIdx = rates.findIndex((r, i) => i !== worstIdx && r === Math.max(...rates.filter((x, i) => i !== worstIdx)));
+  
+  const html = `
+    <div class="alert-row">
+      <div class="alert-icon danger">⚠</div>
+      <div class="alert-text"><strong>${branches[worstIdx]} — Kabig Rate ${rates[worstIdx]}%</strong><br>Exceeds 50% critical threshold. Kabig (₱${(kabig[worstIdx]/1000000).toFixed(2)}M) nearly matches Hits (₱${(hits[worstIdx]/1000000).toFixed(2)}M). Conduct immediate audit.</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-icon danger">⚠</div>
+      <div class="alert-text"><strong>${branches[secondWorstIdx]} — Kabig Rate ${rates[secondWorstIdx]}%</strong><br>Second-highest Kabig rate. ₱${(kabig[secondWorstIdx]/1000000).toFixed(2)}M in Kabig against ₱${(hits[secondWorstIdx]/1000000).toFixed(2)}M Hits. Near-parity is a serious signal.</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-icon warn">!</div>
+      <div class="alert-text"><strong>System-wide above 45% — ${rates.filter(r => r > 45).length} branches</strong><br>Combined high Kabig affecting overall retention. Target reduction to below 40% within 30 days.</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-icon ok">✓</div>
+      <div class="alert-text"><strong>${branches[bestIdx]} — Best performer</strong><br>₱${(gross[bestIdx]/1000000).toFixed(1)}M gross with only ${rates[bestIdx]}% Kabig rate. Top efficiency in the network.</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-icon info">i</div>
+      <div class="alert-text"><strong>System-wide Kabig: ${Math.round(totalKabig/totalGross*1000)/10}% of ₱${(totalGross/1000000).toFixed(1)}M gross</strong><br>₱${(totalKabig/1000000).toFixed(1)}M in total Kabig. Setting a 35% system target would recover an additional ~₱${((totalKabig - (totalGross * 0.35))/1000000).toFixed(1)}M in retained revenue.</div>
+    </div>
+  `;
+  
+  document.getElementById('alerts-container').innerHTML = html;
+}
+
+// ── Render charts ──
+function renderCharts(branches, gross, hits, kabig, colors, rates) {
+  const totalGross = gross.reduce((a,b) => a+b, 0);
+  
+  // Pie chart
+  if (charts.pie) charts.pie.destroy();
+  charts.pie = new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: { 
+      labels: branches, 
+      datasets: [{ 
+        data: gross, 
+        backgroundColor: colors, 
+        borderWidth: 0 
+      }] 
+    },
+    options: {
+      responsive: true, 
+      maintainAspectRatio: false, 
+      cutout: '65%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { 
+          callbacks: { 
+            label: c => c.label + ': ₱' + (c.raw/1000000).toFixed(1) + 'M (' + Math.round(c.raw/totalGross*1000)/10 + '%)' 
+          } 
+        }
+      }
+    }
+  });
+  
+  // Pie legend
+  let legendHTML = '';
+  branches.forEach((b, i) => {
+    legendHTML += `<span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8899b8"><span style="width:8px;height:8px;border-radius:2px;background:${colors[i]};flex-shrink:0"></span>${b}</span>`;
+  });
+  document.getElementById('pie-legend').innerHTML = legendHTML;
+  
+  // Stacked chart
+  if (charts.stacked) charts.stacked.destroy();
+  charts.stacked = new Chart(document.getElementById('stackedChart'), {
+    type: 'bar',
+    data: {
+      labels: branches,
+      datasets: [
+        { label: 'Hits',  data: hits,  backgroundColor: '#00c896', borderWidth: 0 },
+        { label: 'Kabig', data: kabig, backgroundColor: '#f5a623', borderWidth: 0 }
+      ]
+    },
+    options: {
+      responsive: true, 
+      maintainAspectRatio: false,
+      plugins: { 
+        legend: { display: false }, 
+        tooltip: { 
+          callbacks: { 
+            label: c => c.dataset.label + ': ₱' + (c.raw/1000000).toFixed(2) + 'M' 
+          } 
+        } 
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { color: '#8899b8', font: { size: 10 }, autoSkip: false, maxRotation: 35 } },
+        y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899b8', font: { size: 10 }, callback: v => '₱' + (v/1000000).toFixed(0) + 'M' } }
+      }
+    }
+  });
+  
+  // Rate chart
+  const ratesSorted = branches.map((b, i) => ({ name: b, rate: rates[i], idx: i }))
+    .sort((a, b) => b.rate - a.rate);
+  
+  const rateLabels = ratesSorted.map(x => x.name);
+  const rateValues = ratesSorted.map(x => x.rate);
+  const rateColors = rateValues.map(r => r >= 50 ? '#ff4d6d' : r >= 45 ? '#f5a623' : '#00c896');
+  
+  if (charts.rate) charts.rate.destroy();
+  charts.rate = new Chart(document.getElementById('rateChart'), {
+    type: 'bar',
+    data: {
+      labels: rateLabels,
+      datasets: [{ label: 'Kabig %', data: rateValues, backgroundColor: rateColors, borderWidth: 0, borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, 
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => c.raw + '% kabig rate' } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#8899b8', font: { size: 11 }, autoSkip: false, maxRotation: 30 } },
+        y: { min: 0, max: 60, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899b8', font: { size: 10 }, callback: v => v + '%' } }
+      }
+    },
+    plugins: [{
+      id: 'threshold',
+      afterDraw(chart) {
+        const { ctx, chartArea, scales } = chart;
+        const y = scales.y.getPixelForValue(45);
+        ctx.save();
+        ctx.strokeStyle = '#ff4d6d';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 4]);
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(chartArea.left, y);
+        ctx.lineTo(chartArea.right, y);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+// ── Animated counter ──
 function animateCounter(el, target, prefix, suffix, duration) {
   let start = 0, step = target / (duration / 16);
   const fmt = v => prefix + (v/1000000).toFixed(1) + suffix;
@@ -650,92 +870,27 @@ function animateCounter(el, target, prefix, suffix, duration) {
   };
   requestAnimationFrame(tick);
 }
-animateCounter(document.getElementById('counter-total'), 203942705, '₱', 'M', 1800);
 
-/* ── Data ── */
-const branches = ['Maguindanao','Cotabato','LDN Iligan','LDN Lanao','Lanao Del Sur','LDN Lotto','LDN Set-B','LDN Balo-I'];
-const gross  = [58606348,40331919,30226263,28564944,20277750,12852818,9281736,3800927];
-const hits   = [39968910,25649089,15457118,14766809,11282175,6503749,5290882,1868224];
-const kabig  = [18637438,14682830,14769145,13798135,8995575,6349069,3990854,1932703];
-const colors = ['#00c896','#4a9eff','#a78bfa','#f5a623','#fb7185','#f472b6','#86efac','#94a3b8'];
-const rates  = branches.map((_,i)=>Math.round(kabig[i]/(hits[i]+kabig[i])*1000)/10);
-const rateColors = rates.map(r=>r>=50?'#ff4d6d':r>=45?'#f5a623':'#00c896');
+// ── Schedule daily updates ──
+function scheduleNextUpdate() {
+  const now = new Date();
+  const nextUpdate = new Date(now);
+  nextUpdate.setHours(24, 0, 0, 0); // Midnight tomorrow
+  const msUntilUpdate = nextUpdate - now;
+  
+  console.log(`Next update scheduled in ${Math.round(msUntilUpdate/1000/60)} minutes`);
+  setTimeout(fetchSheetData, msUntilUpdate);
+}
 
-/* ── Pie chart ── */
-new Chart(document.getElementById('pieChart'), {
-  type: 'doughnut',
-  data: { labels: branches, datasets: [{ data: gross, backgroundColor: colors, borderWidth: 0 }] },
-  options: {
-    responsive: true, maintainAspectRatio: false, cutout: '65%',
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: c => c.label + ': ₱' + (c.raw/1000000).toFixed(1) + 'M (' + Math.round(c.raw/203942705*1000)/10 + '%)' } }
-    }
-  }
-});
+// ── Initial load ──
+document.getElementById('gen-date').textContent = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
+fetchSheetData();
 
-/* ── Stacked bar ── */
-new Chart(document.getElementById('stackedChart'), {
-  type: 'bar',
-  data: {
-    labels: branches.map(b => b.replace('LDN ','').replace(' Del Sur','')),
-    datasets: [
-      { label: 'Hits',  data: hits,  backgroundColor: '#00c896', borderWidth: 0 },
-      { label: 'Kabig', data: kabig, backgroundColor: '#f5a623', borderWidth: 0 }
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.dataset.label + ': ₱' + (c.raw/1000000).toFixed(2) + 'M' } } },
-    scales: {
-      x: { stacked: true, grid: { display: false }, ticks: { color: '#8899b8', font: { size: 10 }, autoSkip: false, maxRotation: 35 } },
-      y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899b8', font: { size: 10 }, callback: v => '₱' + (v/1000000).toFixed(0) + 'M' } }
-    }
-  }
-});
-
-/* ── Rate chart with threshold ── */
-const rateCtx = document.getElementById('rateChart');
-const rateChartByKabig = ['LDN Balo-I','LDN Lotto','LDN Iligan','LDN Lanao','Lanao Del Sur','LDN Set-B','Cotabato','Maguindanao'];
-const ratesSorted = [50.9,49.4,48.9,48.3,44.4,43.0,36.4,31.8];
-const rateColorsSorted = ratesSorted.map(r=>r>=50?'#ff4d6d':r>=45?'#f5a623':'#00c896');
-
-new Chart(rateCtx, {
-  type: 'bar',
-  data: {
-    labels: rateChartByKabig,
-    datasets: [{ label: 'Kabig %', data: ratesSorted, backgroundColor: rateColorsSorted, borderWidth: 0, borderRadius: 4 }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: c => c.raw + '% kabig rate' } }
-    },
-    scales: {
-      x: { grid: { display: false }, ticks: { color: '#8899b8', font: { size: 11 }, autoSkip: false, maxRotation: 30 } },
-      y: { min: 0, max: 60, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899b8', font: { size: 10 }, callback: v => v + '%' } }
-    }
-  },
-  plugins: [{
-    id: 'threshold',
-    afterDraw(chart) {
-      const { ctx, chartArea, scales } = chart;
-      const y = scales.y.getPixelForValue(45);
-      ctx.save();
-      ctx.strokeStyle = '#ff4d6d';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([6, 4]);
-      ctx.globalAlpha = 0.7;
-      ctx.beginPath();
-      ctx.moveTo(chartArea.left, y);
-      ctx.lineTo(chartArea.right, y);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-      ctx.restore();
-    }
-  }]
-});
+// Optional: Set document title with date
+setInterval(() => {
+  document.getElementById('gen-date').textContent = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
+}, 60000);
 </script>
+
 </body>
 </html>
